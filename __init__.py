@@ -12,14 +12,22 @@ db_connection = psycopg2.connect(
 
 app = Flask(__name__)
 
-# Sample data
-books = [
-    {'id': 1, 'title': 'The Great Gatsby', 'author': 'F. Scott Fitzgerald'},
-    {'id': 2, 'title': 'To Kill a Mockingbird', 'author': 'Harper Lee'},
-]
+def spcall(qry, param, commit=False):
+    try:
+        cursor = db_connection.cursor()
+        cursor.callproc(qry, param)
+        res = cursor.fetchall()
+        if commit:
+            db_connection.commit()
+        return res
+    except:
+        res = [("Error: " + str(sys.exc_info()[0]) +
+                " " + str(sys.exc_info()[1]),)]
+    return res
 
+    res= spcall('get_site_by_name', (site,))[0][0]
 # Get all books
-@app.route('/books', methods=['GET'])
+@app.route('/movies', methods=['GET'])
 def get_books():
     return jsonify({"status": "ok",
                     'books': books})
