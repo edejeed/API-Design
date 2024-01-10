@@ -1,4 +1,14 @@
 from flask import Flask, jsonify, request
+import psycopg2
+
+# Database connection
+
+db_connection = psycopg2.connect(
+        dbname='api',
+        user='postgres',
+        password='helloworld',
+        host='localhost',
+    )
 
 app = Flask(__name__)
 
@@ -11,14 +21,16 @@ books = [
 # Get all books
 @app.route('/books', methods=['GET'])
 def get_books():
-    return jsonify({'books': books})
+    return jsonify({"status": "ok",
+                    'books': books})
 
 # Get a specific book by ID
 @app.route('/books/<int:book_id>', methods=['GET'])
 def get_book(book_id):
     book = next((item for item in books if item['id'] == book_id), None)
     if book:
-        return jsonify({'book': book})
+        return jsonify({"status": "ok",
+                        'book': book})
     else:
         return jsonify({"status": "error",
                         'message': 'Book not found'})
