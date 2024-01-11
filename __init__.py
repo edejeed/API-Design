@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+import sys
 import psycopg2
 
 # Database connection
@@ -25,52 +26,66 @@ def spcall(qry, param, commit=False):
                 " " + str(sys.exc_info()[1]),)]
     return res
 
-    res= spcall('get_site_by_name', (site,))[0][0]
-# Get all books
-@app.route('/movies', methods=['GET'])
-def get_books():
+@app.route('/colleges', methods=['GET'])
+def get_colleges():
+    colleges=spcall('get_colleges', param=None)[0][0]
     return jsonify({"status": "ok",
-                    'books': books})
+                    'Message': colleges})
 
-# Get a specific book by ID
-@app.route('/books/<int:book_id>', methods=['GET'])
-def get_book(book_id):
-    book = next((item for item in books if item['id'] == book_id), None)
-    if book:
+@app.route('/colleges', methods=['POST'])
+def create_college():
+    data = request.get_json()
+    college = data.get('college')
+    try:
+        if college:
+            res=spcall('insert_college', (college, ), commit=True)
+            return jsonify({"status": "ok",
+                        'message': 'College created successfully'})
+    except:
+        return {"status":"serverError", "message":str(sys.exc_info()[0]) +
+                " " + str(sys.exc_info()[1])}
+
+
+# Get a specific college by ID
+@app.route('/college/<int:college_id>', methods=['GET'])
+def get_college(college_id):
+    try:
+        res = spcall('get_college_by_id', (college_id, ), commit=False)[0][0]
+        if res:
+            return jsonify({"status": "ok",
+                            'message': res})
+        else:
+            return jsonify({"status": "error",
+                            'message': 'College not found'})
+    except:
+        return {"status":"serverError", "message":str(sys.exc_info()[0]) +
+                " " + str(sys.exc_info()[1])}
+
+# Update a College by ID
+@app.route('/college/<int:college_id>', methods=['PUT'])
+def update_college(college_id):
+    try:
+        data = request.get_json()
+        college = data.get('college')
+        if college:
+            res = spcall('update_college_by_id', (college_id, college), commit=True)
+            return jsonify({"status": "ok",
+                            'message': 'College updated successfully'})
+    except:
+        return {"status":"serverError", "message":str(sys.exc_info()[0]) +
+                " " + str(sys.exc_info()[1])}
+
+
+# Delete a movie by ID
+@app.route('/college/<int:college_id>', methods=['DELETE'])
+def delete_college(college_id):
+    try:
+        res = spcall('delete_college_by_id', (college_id, ), commit=True)
         return jsonify({"status": "ok",
-                        'book': book})
-    else:
-        return jsonify({"status": "error",
-                        'message': 'Book not found'})
-
-# Create a new book
-@app.route('/books', methods=['POST'])
-def create_book():
-    new_book = {'id': len(books) + 1, 'title': request.json['title'], 'author': request.json['author']}
-    books.append(new_book)
-    return jsonify({"status": "ok",
-                    'message': 'Book created successfully', 'book': new_book})
-
-# Update a book by ID
-@app.route('/books/<int:book_id>', methods=['PUT'])
-def update_book(book_id):
-    book = next((item for item in books if item['id'] == book_id), None)
-    if book:
-        book['title'] = request.json.get('title', book['title'])
-        book['author'] = request.json.get('author', book['author'])
-        return jsonify({"status": "ok",
-                        'message': 'Book updated successfully', 'book': book})
-    else:
-        return jsonify({"status": "error",
-                        'message': 'Book not found'})
-
-# Delete a book by ID
-@app.route('/books/<int:book_id>', methods=['DELETE'])
-def delete_book(book_id):
-    global books
-    books = [item for item in books if item['id'] != book_id]
-    return jsonify({"status": "ok",
-                    'message': 'Book deleted successfully'})
+                        'message': 'College deleted successfully'})
+    except:
+        return {"status":"serverError", "message":str(sys.exc_info()[0]) +
+                " " + str(sys.exc_info()[1])}
 
 if __name__ == '__main__':
     app.run(debug=True)
