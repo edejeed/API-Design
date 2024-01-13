@@ -5,7 +5,7 @@ CREATE OR REPLACE FUNCTION insert_course(
 RETURNS VOID AS $$
 BEGIN
     INSERT INTO course(course_name)
-    VALUES (p_ccourse_name);
+    VALUES (p_course_name);
 END;
 $$ LANGUAGE plpgsql;
 
