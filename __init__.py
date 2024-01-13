@@ -26,63 +26,68 @@ def spcall(qry, param, commit=False):
                 " " + str(sys.exc_info()[1]),)]
     return res
 
-@app.route('/colleges', methods=['GET'])
-def get_colleges():
-    colleges=spcall('get_colleges', param=None)[0][0]
+@app.route('/courses', methods=['GET'])
+def get_courses():
+    courses=spcall('get_courses', param=None)[0][0]
     return jsonify({"status": "ok",
-                    'Message': colleges})
+                    'Message': courses})
 
-@app.route('/colleges', methods=['POST'])
-def create_college():
+@app.route('/course', methods=['POST'])
+def create_course():
     data = request.get_json()
-    college = data.get('college')
+    course = data.get('course')
     try:
-        if college:
-            res=spcall('insert_college', (college, ), commit=True)
+        if course:
+            res=spcall('insert_course', (course, ), commit=True)
             return jsonify({"status": "ok",
-                        'message': 'College created successfully'})
+                        'message': 'course created successfully'})
     except:
         return {"status":"serverError", "message":str(sys.exc_info()[0]) +
                 " " + str(sys.exc_info()[1])}
 
 
-# Get a specific college by ID
-@app.route('/college/<int:college_id>', methods=['GET'])
-def get_college(college_id):
+# Get a specific course by ID
+@app.route('/course/<int:course_id>', methods=['GET'])
+def get_course(course_id):
     try:
-        res = spcall('get_college_by_id', (college_id, ), commit=False)[0][0]
+        res = spcall('get_course_by_id', (course_id, ), commit=False)[0][0]
         if res:
             return jsonify({"status": "ok",
                             'message': res})
         else:
             return jsonify({"status": "error",
-                            'message': 'College not found'})
+                            'message': 'course not found'})
     except:
         return {"status":"serverError", "message":str(sys.exc_info()[0]) +
                 " " + str(sys.exc_info()[1])}
 
-# Update a College by ID
-@app.route('/college/<int:college_id>', methods=['PUT'])
-def update_college(college_id):
+# Update a course by ID
+@app.route('/course/<int:course_id>', methods=['PUT'])
+def update_course(course_id):
     try:
         data = request.get_json()
-        college = data.get('college')
-        if college:
-            res = spcall('update_college_by_id', (college_id, college), commit=True)
-            return jsonify({"status": "ok",
-                            'message': 'College updated successfully'})
-    except:
-        return {"status":"serverError", "message":str(sys.exc_info()[0]) +
-                " " + str(sys.exc_info()[1])}
+        course = data.get('course')
+        print(course, course_id)
+        
+        if course:
+            res = spcall('update_course_by_id', (course_id, course), commit=True)
+            
+            # Check if the update was successful
+            if res:  # Assuming 'spcall' returns something meaningful upon success
+                return jsonify({"status": "ok", 'message': 'course updated successfully'})
+            else:
+                return jsonify({"status": "error", 'message': 'course update failed'})
 
+    except Exception as e:
+        return jsonify({"status": "serverError", "message": str(e)})
 
 # Delete a movie by ID
-@app.route('/college/<int:college_id>', methods=['DELETE'])
-def delete_college(college_id):
+@app.route('/course/<int:course_id>', methods=['DELETE'])
+def delete_course(course_id):
     try:
-        res = spcall('delete_college_by_id', (college_id, ), commit=True)
+        res = spcall('delete_course_by_id', (course_id, ), commit=True)
         return jsonify({"status": "ok",
-                        'message': 'College deleted successfully'})
+                        'message': 'course deleted successfully'})
     except:
         return {"status":"serverError", "message":str(sys.exc_info()[0]) +
                 " " + str(sys.exc_info()[1])}
