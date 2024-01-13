@@ -28,9 +28,12 @@ def spcall(qry, param, commit=False):
 
 @app.route('/courses', methods=['GET'])
 def get_courses():
-    courses=spcall('get_courses', param=None)[0][0]
-    return jsonify({"status": "ok",
-                    'Message': courses})
+    try:
+        courses=spcall('get_courses', param=None)[0][0]
+        return jsonify({"status": "ok",
+                        'Message': courses})
+    except Exception as e:
+        return jsonify({"status": "serverError", "message": str(e)})
 
 @app.route('/course', methods=['POST'])
 def create_course():
@@ -41,9 +44,8 @@ def create_course():
             res=spcall('insert_course', (course, ), commit=True)
             return jsonify({"status": "ok",
                         'message': 'course created successfully'})
-    except:
-        return {"status":"serverError", "message":str(sys.exc_info()[0]) +
-                " " + str(sys.exc_info()[1])}
+    except Exception as e:
+        return jsonify({"status": "serverError", "message": str(e)})
 
 
 # Get a specific course by ID
@@ -57,9 +59,8 @@ def get_course(course_id):
         else:
             return jsonify({"status": "error",
                             'message': 'course not found'})
-    except:
-        return {"status":"serverError", "message":str(sys.exc_info()[0]) +
-                " " + str(sys.exc_info()[1])}
+    except Exception as e:
+        return jsonify({"status": "serverError", "message": str(e)})
 
 # Update a course by ID
 @app.route('/course/<int:course_id>', methods=['PUT'])
@@ -81,7 +82,7 @@ def update_course(course_id):
     except Exception as e:
         return jsonify({"status": "serverError", "message": str(e)})
 
-# Delete a movie by ID
+# Delete a course by ID
 @app.route('/course/<int:course_id>', methods=['DELETE'])
 def delete_course(course_id):
     try:
@@ -91,6 +92,76 @@ def delete_course(course_id):
     except:
         return {"status":"serverError", "message":str(sys.exc_info()[0]) +
                 " " + str(sys.exc_info()[1])}
+
+
+#STUDENTS API
+
+@app.route('/students', methods=['GET'])
+def get_students():
+    try:
+        students =spcall('get_students', param=None)[0][0]
+        return jsonify({"status": "ok",
+                        'Message': students})
+    except Exception as e:
+        return jsonify({"status": "serverError", "message": str(e)})
+
+@app.route('/student', methods=['POST'])
+def create_student():
+    data = request.get_json()
+    student = data.get('student')
+    course_id = data.get('course_id')
+    try:
+        if student:
+            res=spcall('insert_student', (student, course_id), commit=True)
+            return jsonify({"status": "ok",
+                        'message': 'student created successfully'})
+    except Exception as e:
+        return jsonify({"status": "serverError", "message": str(e)})
+
+
+# Get a specific student by ID
+@app.route('/student/<int:student_id>', methods=['GET'])
+def get_student(student_id):
+    try:
+        res = spcall('get_student_by_id', (student_id, ), commit=False)[0][0]
+        if res:
+            return jsonify({"status": "ok",
+                            'message': res})
+        else:
+            return jsonify({"status": "error",
+                            'message': 'student not found'})
+    except Exception as e:
+        return jsonify({"status": "serverError", "message": str(e)})
+
+# Update a student by ID
+@app.route('/student/<int:student_id>', methods=['PUT'])
+def update_student(student_id):
+    try:
+        data = request.get_json()
+        student = data.get('student')
+        course_id = data.get('course_id')
+
+        if student:
+            res = spcall('update_student_by_id', (student_id, student, course_id), commit=True)
+            if res: 
+                return jsonify({"status": "ok", 'message': 'student updated successfully'})
+            else:
+                return jsonify({"status": "error", 'message': 'student update failed'})
+
+    except Exception as e:
+        return jsonify({"status": "serverError", "message": str(e)})
+
+# Delete a student by ID
+@app.route('/student/<int:student_id>', methods=['DELETE'])
+def delete_student(student_id):
+    try:
+        res = spcall('delete_student_by_id', (student_id, ), commit=True)
+        return jsonify({"status": "ok",
+                        'message': 'student deleted successfully'})
+    except:
+        return {"status":"serverError", "message":str(sys.exc_info()[0]) +
+                " " + str(sys.exc_info()[1])}
+
 
 if __name__ == '__main__':
     app.run(debug=True)
