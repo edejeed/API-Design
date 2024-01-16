@@ -33,7 +33,7 @@ def get_courses():
         return jsonify({"status": "ok",
                         'Message': courses})
     except Exception as e:
-        return jsonify({"status": "serverError", "message": str(e)})
+        return jsonify({"status": "error", "message": str(e)})
 
 @app.route('/course', methods=['POST'])
 def create_course():
@@ -45,7 +45,7 @@ def create_course():
             return jsonify({"status": "ok",
                         'message': 'course created successfully'})
     except Exception as e:
-        return jsonify({"status": "serverError", "message": str(e)})
+        return jsonify({"status": "error", "message": str(e)})
 
 
 # Get a specific course by ID
@@ -60,7 +60,7 @@ def get_course(course_id):
             return jsonify({"status": "error",
                             'message': 'course not found'})
     except Exception as e:
-        return jsonify({"status": "serverError", "message": str(e)})
+        return jsonify({"status": "error", "message": str(e)})
 
 # Update a course by ID
 @app.route('/course/<int:course_id>', methods=['PUT'])
@@ -80,7 +80,7 @@ def update_course(course_id):
                 return jsonify({"status": "error", 'message': 'course update failed'})
 
     except Exception as e:
-        return jsonify({"status": "serverError", "message": str(e)})
+        return jsonify({"status": "error", "message": str(e)})
 
 # Delete a course by ID
 @app.route('/course/<int:course_id>', methods=['DELETE'])
@@ -90,7 +90,7 @@ def delete_course(course_id):
         return jsonify({"status": "ok",
                         'message': 'course deleted successfully'})
     except:
-        return {"status":"serverError", "message":str(sys.exc_info()[0]) +
+        return {"status":"error", "message":str(sys.exc_info()[0]) +
                 " " + str(sys.exc_info()[1])}
 
 
@@ -103,7 +103,7 @@ def get_students():
         return jsonify({"status": "ok",
                         'Message': students})
     except Exception as e:
-        return jsonify({"status": "serverError", "message": str(e)})
+        return jsonify({"status": "error", "message": str(e)})
 
 @app.route('/student', methods=['POST'])
 def create_student():
@@ -116,7 +116,7 @@ def create_student():
             return jsonify({"status": "ok",
                         'message': 'student created successfully'})
     except Exception as e:
-        return jsonify({"status": "serverError", "message": str(e)})
+        return jsonify({"status": "error", "message": str(e)})
 
 
 # Get a specific student by ID
@@ -131,7 +131,7 @@ def get_student(student_id):
             return jsonify({"status": "error",
                             'message': 'student not found'})
     except Exception as e:
-        return jsonify({"status": "serverError", "message": str(e)})
+        return jsonify({"status": "error", "message": str(e)})
 
 # Update a student by ID
 @app.route('/student/<int:student_id>', methods=['PUT'])
@@ -149,7 +149,7 @@ def update_student(student_id):
                 return jsonify({"status": "error", 'message': 'student update failed'})
 
     except Exception as e:
-        return jsonify({"status": "serverError", "message": str(e)})
+        return jsonify({"status": "error", "message": str(e)})
 
 # Delete a student by ID
 @app.route('/student/<int:student_id>', methods=['DELETE'])
@@ -159,7 +159,7 @@ def delete_student(student_id):
         return jsonify({"status": "ok",
                         'message': 'student deleted successfully'})
     except:
-        return {"status":"serverError", "message":str(sys.exc_info()[0]) +
+        return {"status":"error", "message":str(sys.exc_info()[0]) +
                 " " + str(sys.exc_info()[1])}
 
 
