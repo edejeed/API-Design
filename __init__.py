@@ -53,12 +53,8 @@ def create_course():
 def get_course(course_id):
     try:
         res = spcall('get_course_by_id', (course_id, ), commit=False)[0][0]
-        if res:
-            return jsonify({"status": "ok",
+        return jsonify({"status": "ok",
                             'message': res})
-        else:
-            return jsonify({"status": "error",
-                            'message': 'course not found'})
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
 
@@ -72,12 +68,8 @@ def update_course(course_id):
         
         if course:
             res = spcall('update_course_by_id', (course_id, course), commit=True)
-            
-            # Check if the update was successful
-            if res:  # Assuming 'spcall' returns something meaningful upon success
-                return jsonify({"status": "ok", 'message': 'course updated successfully'})
-            else:
-                return jsonify({"status": "error", 'message': 'course update failed'})
+            return jsonify({"status": "ok", 
+                'message': 'course updated successfully'})
 
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
@@ -124,12 +116,9 @@ def create_student():
 def get_student(student_id):
     try:
         res = spcall('get_student_by_id', (student_id, ), commit=False)[0][0]
-        if res:
-            return jsonify({"status": "ok",
+        return jsonify({"status": "ok",
                             'message': res})
-        else:
-            return jsonify({"status": "error",
-                            'message': 'student not found'})
+                            
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
 
@@ -143,10 +132,7 @@ def update_student(student_id):
 
         if student:
             res = spcall('update_student_by_id', (student_id, student, course_id), commit=True)
-            if res: 
-                return jsonify({"status": "ok", 'message': 'student updated successfully'})
-            else:
-                return jsonify({"status": "error", 'message': 'student update failed'})
+            return jsonify({"status": "ok", 'message': 'student updated successfully'})
 
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)})
